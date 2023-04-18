@@ -12,13 +12,27 @@ import Subtitle from "../components/MealDetail/Subtitle";
 import List from "../components/MealDetail/List";
 import { useLayoutEffect } from "react";
 import IconButton from "../components/IconButton";
+import { useDispatch, useSelector } from "react-redux";
+import { addFavorite, removeFavorite } from "../store/redux/favorites";
 
 function MealDetailScreen({ route, navigation }) {
+  const favoriteMealsIds = useSelector((state) => state.favoriteMeals.ids);
+  const dispatch = useDispatch();
+
   const mealId = route.params.mealId;
   const selectedMeal = MEALS.find((meal) => meal.id === mealId);
 
+  const mealIsFavorite = favoriteMealsIds.includes(mealId);
+
   function headerButtonPressHandler() {
-    console.log("pressed");
+    if (mealIsFavorite) {
+      dispatch(removeFavorite({ id: mealId }));
+      // console.log("removing " + mealId);
+    } else {
+      dispatch(addFavorite({ id: mealId }));
+      // console.log("adding " + mealId);
+    }
+    // console.log(favoriteMealsIds);
   }
 
   useLayoutEffect(() => {
@@ -27,7 +41,7 @@ function MealDetailScreen({ route, navigation }) {
         return (
           <IconButton
             onPress={headerButtonPressHandler}
-            icon="star"
+            icon={mealIsFavorite ? "star" : "star-outline"}
             color="white"
           />
         );
